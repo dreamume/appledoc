@@ -104,7 +104,16 @@
     }
 	
 	// In case we end up with no property name, just take the last component...
-	if (!propertyName) propertyName = [components lastObject];
+	if (!propertyName) {
+      NSUInteger index = (NSUInteger)-1;
+      if ([components containsObject:@"DEPRECATED_MSG_ATTRIBUTE"]) {
+        index = [components indexOfObject:@"DEPRECATED_MSG_ATTRIBUTE"];
+      }
+      if (index != 0 && index != (NSUInteger)-1) 
+          propertyName = [components objectAtIndex:index - 1];
+      else 
+          propertyName = [components lastObject];
+    }
 	if ([results containsObject:propertyName]) [results removeObject:propertyName];
     
 	GBMethodArgument *argument = [GBMethodArgument methodArgumentWithName:propertyName];
