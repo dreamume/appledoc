@@ -191,7 +191,7 @@
 		// Add return types, then append all arguments.
 		[self formatTypesFromArray:self.methodResultTypes toArray:result prefix:@"(" suffix:@")"];
 		[self.methodArguments enumerateObjectsUsingBlock:^(GBMethodArgument *argument, NSUInteger idx, BOOL *stop) {
-			[result addObject:[self formattedComponentWithValue:argument.argumentName]];
+            [result addObject:[self formattedComponentWithValue:argument.argumentName]];
 			if (argument.isTyped) {
 				[result addObject:[self formattedComponentWithValue:@":"]];
 				[self formatTypesFromArray:argument.argumentTypes toArray:result prefix:@"(" suffix:@")"];
@@ -202,7 +202,15 @@
 					[result addObject:[self formattedComponentWithValue:@"..." style:1 href:nil]];
 				}
 			}
-			if (idx < [self.methodArguments count]-1) [result addObject:[self formattedComponentWithValue:@" "]];
+			if (idx < [self.methodArguments count]-1) {
+                [result addObject:[self formattedComponentWithValue:@" "]];
+            } else {
+                GBMethodArgument* ma = (GBMethodArgument *)self.methodArguments.lastObject;
+                if ([ma.terminationMacros containsObject:@"DEPRECATED_MSG_ATTRIBUTE"]) {
+                    [result addObject:[self formattedComponentWithValue:@" "]];
+                    [result addObject:[self formattedComponentWithValue:[ma.terminationMacros componentsJoinedByString:@" "]]];
+                }
+            }
 		}];
 	}
 	return result;
