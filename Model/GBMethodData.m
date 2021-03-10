@@ -358,7 +358,9 @@
 			return NO;
 		} else if (self.methodType == GBMethodTypeProperty && source.methodType == GBMethodTypeClass) {
 			return NO;
-		} else {
+        } else if (self.methodType == GBMethodTypeClass && source.methodType == GBMethodTypeProperty) {
+            return YES;
+        } else {
 			[NSException raise:@"Failed merging %@ to %@; method type doesn't match!", source, self];
 		}
 		
