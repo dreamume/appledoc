@@ -160,6 +160,12 @@ typedef NSUInteger GBMethodType;
  */
 @property (assign) BOOL isRequired;
 
+/** Specifies whether this method is a deprecated.
+ 
+ This is convenience accessor for simpler template handling.
+ */
+@property (assign) BOOL isDeprecated;
+
 ///---------------------------------------------------------------------------------------
 /// @name Helper methods
 ///---------------------------------------------------------------------------------------

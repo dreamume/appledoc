@@ -6,7 +6,7 @@
 //  Copyright (C) 2010, Gentle Bytes. All rights reserved.
 //
 
-#import <GRMustache/GRMustache.h>
+//#import <GRMustache/GRMustache.h>
 #import "GBMethodArgument.h"
 #import "GBMethodSectionData.h"
 #import "GBMethodData.h"
@@ -42,7 +42,13 @@
 
 + (id)methodDataWithType:(GBMethodType)type result:(NSArray *)result arguments:(NSArray *)arguments {
 	NSParameterAssert([arguments count] >= 1);
-	return [[self alloc] initWithType:type attributes:[NSArray array] result:result arguments:arguments];
+	GBMethodData* data = 
+        [[self alloc] initWithType:type attributes:[NSArray array] result:result arguments:arguments];
+    GBMethodArgument* ma = (GBMethodArgument *)arguments.lastObject;
+    if ([ma.terminationMacros containsObject:@"DEPRECATED_MSG_ATTRIBUTE"])
+        data.isDeprecated = YES;
+
+    return data;
 }
 
 + (id)propertyDataWithAttributes:(NSArray *)attributes components:(NSArray *)components {
@@ -55,6 +61,7 @@
     BOOL nextComponentIsBlockReturnComponent = NO;
 	BOOL nextComponentIsPropertyName = NO;
     BOOL inProtocolsList = NO;
+    BOOL isDeprecated = NO;
     NSUInteger parenthesisLevel = 0;
     for (NSString *component in components) {
         if ([component isEqualToString:@"^"]) {
@@ -109,15 +116,21 @@
       if ([components containsObject:@"DEPRECATED_MSG_ATTRIBUTE"]) {
         index = [components indexOfObject:@"DEPRECATED_MSG_ATTRIBUTE"];
       }
-      if (index != 0 && index != (NSUInteger)-1) 
+      if (index != 0 && index != (NSUInteger)-1) {
           propertyName = [components objectAtIndex:index - 1];
-      else 
+          isDeprecated = YES;
+      } else {
           propertyName = [components lastObject];
+      }
     }
 	if ([results containsObject:propertyName]) [results removeObject:propertyName];
     
 	GBMethodArgument *argument = [GBMethodArgument methodArgumentWithName:propertyName];
-	return [[self alloc] initWithType:GBMethodTypeProperty attributes:attributes result:results arguments:@[argument]];
+	GBMethodData* data = 
+        [[self alloc] initWithType:GBMethodTypeProperty attributes:attributes result:results arguments:@[argument]];
+    data.isDeprecated = isDeprecated;
+
+    return data;
 }
 
 - (id)initWithType:(GBMethodType)type attributes:(NSArray *)attributes result:(NSArray *)result arguments:(NSArray *)arguments {
@@ -472,5 +485,6 @@
 @synthesize prefixedMethodSelector = _prefixedMethodSelector;
 @synthesize methodSection;
 @synthesize isRequired;
+@synthesize isDeprecated;
 
 @end

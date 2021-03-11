@@ -273,7 +273,8 @@ Section TaskTitle
 EndSection
 
 Section TaskMethod
-<code><a href="{{htmlLocalReference}}">{{>TaskSelector}}</a></code>
+{{#isDeprecated}}<code><a href="{{htmlLocalReference}} " style="text-decoration: line-through" >{{>TaskSelector}}</a></code>{{/isDeprecated}}
+{{^isDeprecated}}<code><a href="{{htmlLocalReference}}">{{>TaskSelector}}</a></code>{{/isDeprecated}}
 {{#isRequired}}<span class="task-item-suffix">{{strings.objectTasks.requiredMethod}}</span>{{/isRequired}}
 EndSection
 
